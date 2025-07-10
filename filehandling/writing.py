@@ -1,4 +1,5 @@
-file=open("file.txt", "w")
+file=open("gidso.txt", "w")
 file.write("Hello, World!\n")
 file.write("This is a new line.\n")
+file.write("Hello Welcome to Gidsotech College Python Crash Course\n")
 file.close()
