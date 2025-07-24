@@ -1,60 +1,127 @@
 class Person:
-    person_count = 0  # class variable
-
-    def __init__(self, name, age, national_id):
+    def __init__(self, name, id_number):
         self.name = name
-        self.age = age
-        self.__national_id = national_id  # private attribute
-        Person.person_count += 1
+        self.id_number = id_number
 
-    def __str__(self):
-        return f"Name: {self.name}, Age: {self.age}"
-
-    def __repr__(self):
-        return f"Person('{self.name}', {self.age})"
+    def display_info(self):
+        print(f"Name: {self.name}, ID: {self.id_number}")
 
 
-class Student(Person):
-    def __init__(self, name, age, national_id, student_id):
-        super().__init__(name, age, national_id)
-        self.student_id = student_id
-
-    def get_role(self):
-        return "Student"
-
-    def __str__(self):
-        return f"{super().__str__()}, Student ID: {self.student_id}"
-
-    def __repr__(self):
-        return f"Student('{self.name}', {self.age}, '{self.student_id}')"
-
-
-class Teacher(Person):
-    def __init__(self, name, age, national_id, employee_id, subject):
-        super().__init__(name, age, national_id)
+class Librarian(Person):
+    def __init__(self, name, id_number, employee_id):
+        super().__init__(name, id_number)
         self.employee_id = employee_id
-        self.subject = subject
 
-    def get_role(self):
-        return "Teacher"
-
-    def __str__(self):
-        return f"{super().__str__()}, Employee ID: {self.employee_id}, Subject: {self.subject}"
-
-    def __repr__(self):
-        return f"Teacher('{self.name}', {self.age}, '{self.employee_id}', '{self.subject}')"
+    def display_info(self):
+        print(f"Librarian: {self.name}, ID: {self.id_number}, Employee ID: {self.employee_id}")
 
 
-# ✅ Test the classes
-s1 = Student("Alice", 19, "ID001", "S101")
-t1 = Teacher("Mr. Smith", 40, "ID002", "T202", "Math")
+class Member(Person):
+    def __init__(self, name, id_number, membership_type):
+        super().__init__(name, id_number)
+        self.membership_type = membership_type
 
-print(s1)         # __str__
-print(t1)
-print(repr(s1))   # __repr__
-print(repr(t1))
+    def display_info(self):
+        print(f"Member: {self.name}, ID: {self.id_number}, Membership: {self.membership_type}")
 
-print(s1.get_role())  # Polymorphism
-print(t1.get_role())
 
-print("Total people created:", Person.person_count)
+class Book:
+    total_borrowed = 0  # class variable
+
+    def __init__(self, title, author, isbn):
+        self.title = title
+        self.author = author
+        self.isbn = isbn
+        self.available = True
+
+    def display_book(self):
+        status = "Available" if self.available else "Borrowed"
+        print(f"{self.title} by {self.author} | ISBN: {self.isbn} | Status: {status}")
+
+
+# Storage
+books = []
+members = []
+
+# Menu
+def menu():
+    while True:
+        print("\n📚 LIBRARY SYSTEM MENU")
+        print("1. Register Member")
+        print("2. Add Book")
+        print("3. View Books")
+        print("4. Borrow Book")
+        print("5. Return Book")
+        print("6. Show Borrowed Count")
+        print("7. Exit")
+
+        choice = input("Enter your choice (1–7): ")
+
+        if choice == '1':
+            name = input("Enter member name: ")
+            id_number = input("Enter ID number: ")
+            membership_type = input("Enter membership type (student/staff): ")
+            member = Member(name, id_number, membership_type)
+            members.append(member)
+            print("✅ Member registered.")
+
+        elif choice == '2':
+            title = input("Enter book title: ")
+            author = input("Enter author: ")
+            isbn = input("Enter ISBN: ")
+            book = Book(title, author, isbn)
+            books.append(book)
+            print("✅ Book added.")
+
+        elif choice == '3':
+            if not books:
+                print("No books in library.")
+            else:
+                print("\n📖 All Books:")
+                for book in books:
+                    book.display_book()
+
+        elif choice == '4':
+            isbn = input("Enter ISBN of book to borrow: ")
+            found = False
+            for book in books:
+                if book.isbn == isbn:
+                    found = True
+                    if book.available:
+                        book.available = False
+                        Book.total_borrowed += 1
+                        print(f"✅ You borrowed '{book.title}'")
+                    else:
+                        print("❌ Book already borrowed.")
+                    break
+            if not found:
+                print("❌ Book not found.")
+
+        elif choice == '5':
+            isbn = input("Enter ISBN of book to return: ")
+            found = False
+            for book in books:
+                if book.isbn == isbn:
+                    found = True
+                    if not book.available:
+                        book.available = True
+                        Book.total_borrowed -= 1
+                        print(f"✅ You returned '{book.title}'")
+                    else:
+                        print("❌ Book was not borrowed.")
+                    break
+            if not found:
+                print("❌ Book not found.")
+
+        elif choice == '6':
+            print(f"📊 Total books currently borrowed: {Book.total_borrowed}")
+
+        elif choice == '7':
+            print("👋 Goodbye!")
+            break
+
+        else:
+            print("❌ Invalid option. Try again.")
+
+# Run the program
+menu()
